@@ -1,0 +1,38 @@
+version: "3"
+services:
+  product-service-db:
+    image: mongo
+    container_name: product-service-db
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - ./dbdata:/data/db
+    networks:
+      - product-network
+  product-service-db-express:
+    image: mongo-express
+    container_name: product-service-db-express
+    depends_on:
+      - product-service-db
+    restart: always
+    ports:
+      - 8081:8081
+    networks:
+      - product-network
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=product-service-db
+  product-service:
+    image: savak1990/product-service:0.0.1-SNAPSHOT
+    container_name: product-service-rest
+    depends_on:
+      - product-service-db
+    restart: always
+    ports:
+      - 8091:8091
+    networks:
+      - product-network
+    environment:
+      - SPRING_DATA_MONGODB_HOST=product-service-db
+networks:
+  product-network:
