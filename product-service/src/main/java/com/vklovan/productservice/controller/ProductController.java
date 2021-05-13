@@ -1,5 +1,7 @@
 package com.vklovan.productservice.controller;
 
+import com.vklovan.productservice.dto.CountOffsetCriteria;
+import com.vklovan.productservice.dto.PriceCriteria;
 import com.vklovan.productservice.dto.ProductDto;
 import com.vklovan.productservice.service.ProductService;
 import com.vklovan.productservice.util.ProductMapper;
@@ -10,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.math.BigDecimal;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("products")
@@ -21,15 +23,16 @@ public class ProductController {
     private final ProductMapper mapper;
 
     @GetMapping
-    public Flux<ProductDto> getAll() {
-        return service.getAll().map(mapper::toDto);
+    public Flux<ProductDto> getAll(
+            @Valid CountOffsetCriteria countOffsetCriteria) {
+        return service.getAll(countOffsetCriteria).map(mapper::toDto);
     }
 
     @GetMapping("price-range")
     public Flux<ProductDto> priceRange(
-            @RequestParam BigDecimal min,
-            @RequestParam BigDecimal max) {
-        return service.priceRange(min, max)
+            @Valid PriceCriteria priceCriteria,
+            @Valid CountOffsetCriteria countOffsetCriteria) {
+        return service.priceRange(priceCriteria, countOffsetCriteria)
                 .map(mapper::toDto);
     }
 
@@ -43,7 +46,8 @@ public class ProductController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<ProductDto> insert(@RequestBody Mono<ProductDto> productDtoMono) {
+    public Mono<ProductDto> insert(
+            @RequestBody @Valid Mono<ProductDto> productDtoMono) {
         return productDtoMono
                 .map(mapper::toEntity)
                 .flatMap(service::insert)
@@ -53,7 +57,7 @@ public class ProductController {
     @PutMapping("{id}")
     public Mono<ResponseEntity<ProductDto>> update(
             @PathVariable String id,
-            @RequestBody Mono<ProductDto> productDtoMono) {
+            @RequestBody @Valid Mono<ProductDto> productDtoMono) {
         return productDtoMono
                 .map(mapper::toEntity)
                 .flatMap(p -> service.update(id, p))

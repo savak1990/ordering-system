@@ -35,7 +35,7 @@ public class DataSetupService implements CommandLineRunner {
 
         mongoTemplate.collectionExists(Product.class)
                 .flatMapMany(exists -> exists
-                        ? Flux.error(new RuntimeException("Prodct DB already exists"))
+                        ? Flux.error(new RuntimeException("Product DB already exists"))
                         : Flux.range(0,1000))
                 .map(i -> generateProduct())
                 .flatMap(productService::insert)

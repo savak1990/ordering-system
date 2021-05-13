@@ -1,13 +1,14 @@
 package com.vklovan.productservice.service;
 
+import com.vklovan.productservice.dto.CountOffsetCriteria;
+import com.vklovan.productservice.dto.PriceCriteria;
 import com.vklovan.productservice.entity.Product;
 import com.vklovan.productservice.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Range;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
@@ -15,12 +16,17 @@ public class ProductService {
 
     private final ProductRepository repository;
 
-    public Flux<Product> getAll() {
-        return repository.findAll();
+    public Flux<Product> getAll(CountOffsetCriteria countOffsetCriteria) {
+        return repository.findAll()
+                .skip(countOffsetCriteria.getOffset())
+                .take(countOffsetCriteria.getCount());
     }
 
-    public Flux<Product> priceRange(BigDecimal min, BigDecimal max) {
-        return repository.findByPriceBetween(min, max);
+    public Flux<Product> priceRange(PriceCriteria priceCriteria, CountOffsetCriteria countOffsetCriteria) {
+        return repository.findByPriceBetween(
+                Range.leftOpen(priceCriteria.getMin(), priceCriteria.getMax()))
+                .skip(countOffsetCriteria.getOffset())
+                .take(countOffsetCriteria.getCount());
     }
 
     public Mono<Product> getById(String id) {
