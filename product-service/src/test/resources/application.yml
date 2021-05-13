@@ -5,3 +5,5 @@ spring:
       database: productdb_test
       username:
       password:
+  profiles:
+    active: test

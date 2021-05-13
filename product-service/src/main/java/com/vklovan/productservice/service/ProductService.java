@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
+
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -15,6 +17,10 @@ public class ProductService {
 
     public Flux<Product> getAll() {
         return repository.findAll();
+    }
+
+    public Flux<Product> priceRange(BigDecimal min, BigDecimal max) {
+        return repository.findByPriceBetween(min, max);
     }
 
     public Mono<Product> getById(String id) {
@@ -34,5 +40,9 @@ public class ProductService {
 
     public Mono<Void> delete(String id) {
         return repository.deleteById(id);
+    }
+
+    public Mono<Void> deleteAll() {
+        return repository.deleteAll();
     }
 }

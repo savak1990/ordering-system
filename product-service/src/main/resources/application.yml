@@ -7,3 +7,5 @@ spring:
   data:
     mongodb:
       database: productdb
+  profiles:
+    active: dev
