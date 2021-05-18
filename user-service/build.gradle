@@ -1,0 +1,56 @@
+plugins {
+    id 'org.springframework.boot' version '2.4.5'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+}
+
+group = 'com.vklovan'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+bootBuildImage {
+    imageName = "savak1990/${project.name}:${project.version}"
+    publish = true
+    docker {
+        publishRegistry {
+            username = findProperty("DockerHub_Username")
+            password = findProperty("DockerHub_Password")
+        }
+    }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    implementation 'com.github.javafaker:javafaker:1.0.2'
+
+    implementation 'org.mapstruct:mapstruct:1.4.2.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'io.r2dbc:r2dbc-h2'
+    runtimeOnly 'dev.miku:r2dbc-mysql'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+}
+
+test {
+    useJUnitPlatform()
+}

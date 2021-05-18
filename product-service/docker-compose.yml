@@ -2,7 +2,7 @@ version: "3"
 services:
   product-service-db:
     image: mongo
-    container_name: product-service-db
+    container_name: product-service-mongo-db
     restart: always
     ports:
       - 27017:27017
@@ -12,7 +12,7 @@ services:
       - product-network
   product-service-db-express:
     image: mongo-express
-    container_name: product-service-db-express
+    container_name: product-service-mongo-express
     depends_on:
       - product-service-db
     restart: always

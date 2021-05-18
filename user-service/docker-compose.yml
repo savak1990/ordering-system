@@ -1,0 +1,49 @@
+version: '3.1'
+
+services:
+
+  user-service-db:
+    image: mysql
+    container_name: user-service-db
+    restart: always
+    command: --init-file /data/application/dbcreate.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+    ports:
+      - 3306:3306
+    volumes:
+      - ./dbdata:/var/lib/mysql
+      - ./src/main/resources/dbcreate.sql:/data/application/dbcreate.sql
+    networks:
+      - user-network
+
+  user-service-db-admin:
+    image: adminer
+    container_name: user-service-db-admin
+    restart: always
+    depends_on:
+      - user-service-db
+    ports:
+      - 3307:8080
+    networks:
+      - user-network
+
+  user-service:
+    image: savak1990/user-service:0.0.1-SNAPSHOT
+    container_name: user-service
+    depends_on:
+      user-service-db:
+        condition: service_healthy
+    restart: always
+    ports:
+      - 8092:8092
+    networks:
+      - user-network
+    environment:
+      - SPRING_PROFILES_ACTIVE=staging
+      - SPRING_R2DBC_HOST=user-service-db
+
+networks:
+  user-network:

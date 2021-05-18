@@ -1,0 +1,11 @@
+server:
+  port: 8092
+spring:
+  application:
+    name: user-service
+  profiles:
+    active: dev
+  r2dbc:
+    url: r2dbcs:h2:mem:///user-service-db;MODE=MYSQL
+    username:
+    password:
