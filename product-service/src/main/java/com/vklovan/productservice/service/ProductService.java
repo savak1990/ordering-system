@@ -24,7 +24,7 @@ public class ProductService {
 
     public Flux<Product> priceRange(PriceCriteria priceCriteria, CountOffsetCriteria countOffsetCriteria) {
         return repository.findByPriceBetween(
-                Range.leftOpen(priceCriteria.getMin(), priceCriteria.getMax()))
+                Range.rightOpen(priceCriteria.getMin(), priceCriteria.getMax()))
                 .skip(countOffsetCriteria.getOffset())
                 .take(countOffsetCriteria.getCount());
     }

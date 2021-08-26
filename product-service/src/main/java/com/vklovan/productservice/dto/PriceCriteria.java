@@ -16,10 +16,10 @@ public class PriceCriteria {
     @NotNull(message = "Minimum price should not be null")
     @Digits(integer = 5, fraction = 2, message = "Wrong price format for minimum price")
     @DecimalMin(value = "0", message = "Price should be greater then 0")
-    private BigDecimal min;
+    private double min;
 
     @NotNull(message = "Maximum price should not be null")
     @Digits(integer = 5, fraction = 2, message = "Wrong price format for maximum price")
     @DecimalMin(value = "0", message = "Price should be greated then 0")
-    private BigDecimal max;
+    private double max;
 }

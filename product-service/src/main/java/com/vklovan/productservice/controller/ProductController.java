@@ -6,6 +6,7 @@ import com.vklovan.productservice.dto.ProductDto;
 import com.vklovan.productservice.service.ProductService;
 import com.vklovan.productservice.util.ProductMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("products")
 @RequiredArgsConstructor
+@Slf4j
 public class ProductController {
 
     private final ProductService service;
@@ -32,6 +34,7 @@ public class ProductController {
     public Flux<ProductDto> priceRange(
             @Valid PriceCriteria priceCriteria,
             @Valid CountOffsetCriteria countOffsetCriteria) {
+        log.info("priceRange: {} countOffset: {}", priceCriteria, countOffsetCriteria);
         return service.priceRange(priceCriteria, countOffsetCriteria)
                 .map(mapper::toDto);
     }

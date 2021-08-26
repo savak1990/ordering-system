@@ -13,5 +13,5 @@ import java.math.BigDecimal;
 @Repository
 public interface ProductRepository extends ReactiveMongoRepository<Product, String> {
 
-    Flux<Product> findByPriceBetween(Range<BigDecimal> priceRange);
+    Flux<Product> findByPriceBetween(Range<Double> priceRange);
 }

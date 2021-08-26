@@ -21,7 +21,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.test.StepVerifier;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -72,7 +71,7 @@ class ProductServiceIntegrationTests {
     @Test
     void getAll_OneProductInDb_ReturnOneProduct() {
 
-        Product product = product("title", "desc", BigDecimal.valueOf(1));
+        Product product = product("title", "desc", 1.0);
         String id = mongoTemplate.insert(product).block().getId();
 
         webTestClient.get()
@@ -84,7 +83,7 @@ class ProductServiceIntegrationTests {
                     .jsonPath("$[0].id").isEqualTo(id)
                     .jsonPath("$[0].title").isEqualTo("title")
                     .jsonPath("$[0].description").isEqualTo("desc")
-                    .jsonPath("$[0].price").isEqualTo("1");
+                    .jsonPath("$[0].price").isEqualTo("1.0");
 
     }
 
@@ -104,7 +103,7 @@ class ProductServiceIntegrationTests {
 
     @Test
     void getById_ProductExists_ReturnProduct() {
-        Product productToInsert = product("title", "desc", BigDecimal.valueOf(1));
+        Product productToInsert = product("title", "desc", 1.0);
         Product product = mongoTemplate.insert(productToInsert).block();
 
         webTestClient.get()
@@ -116,7 +115,7 @@ class ProductServiceIntegrationTests {
                     .jsonPath("$.id").isEqualTo(product.getId())
                     .jsonPath("$.title").isEqualTo(product.getTitle())
                     .jsonPath("$.description").isEqualTo(product.getDescription())
-                    .jsonPath("$.price").isEqualTo(product.getPrice().toString());
+                    .jsonPath("$.price").isEqualTo(product.getPrice());
     }
 
     @Test
@@ -142,7 +141,7 @@ class ProductServiceIntegrationTests {
                 .expectBody()
                     .jsonPath("$.title").isEqualTo("title")
                     .jsonPath("$.description").isEqualTo("desc")
-                    .jsonPath("$.price").isEqualTo("1");
+                    .jsonPath("$.price").isEqualTo("1.0");
 
         assertEquals(1, mongoTemplate.estimatedCount(Product.class).block());
     }
@@ -163,7 +162,7 @@ class ProductServiceIntegrationTests {
     @Test
     void update_ProductExists_ProductUpdated() {
 
-        Product existingProduct = product("title", "desc", new BigDecimal(1));
+        Product existingProduct = product("title", "desc", 1.0);
         String id = mongoTemplate.insert(existingProduct).block().getId();
 
         ProductDto newProductDto = productDto("title1", "desc1", new BigDecimal(2));
@@ -177,18 +176,18 @@ class ProductServiceIntegrationTests {
                     .jsonPath("$.id").isEqualTo(id)
                     .jsonPath("$.title").isEqualTo("title1")
                     .jsonPath("$.description").isEqualTo("desc1")
-                    .jsonPath("$.price").isEqualTo("2");
+                    .jsonPath("$.price").isEqualTo("2.0");
 
         Product updatedDbProduct = mongoTemplate.findById(id, Product.class).block();
         assertNotNull(updatedDbProduct);
         assertEquals(newProductDto.getTitle(), updatedDbProduct.getTitle());
         assertEquals(newProductDto.getDescription(), updatedDbProduct.getDescription());
-        assertEquals(newProductDto.getPrice(), updatedDbProduct.getPrice());
+        assertEquals(newProductDto.getPrice().doubleValue(), updatedDbProduct.getPrice());
     }
 
     @Test
     void delete_ProductExists_NoContent() {
-        Product existingProduct = product("title", "desc", new BigDecimal(1));
+        Product existingProduct = product("title", "desc", 1.0);
         String id = mongoTemplate.insert(existingProduct).block().getId();
 
         webTestClient.delete()
@@ -215,7 +214,7 @@ class ProductServiceIntegrationTests {
                     .isEmpty();
     }
 
-    private static Product product(String title, String description, BigDecimal price) {
+    private static Product product(String title, String description, double price) {
         return new Product(null, title, description, price);
     }
 
@@ -223,7 +222,7 @@ class ProductServiceIntegrationTests {
         return new ProductDto(null, title, description, price);
     }
 
-    private static Product product(String id, String title, String description, BigDecimal price) {
+    private static Product product(String id, String title, String description, double price) {
         return new Product(id, title, description, price);
     }
 
@@ -237,7 +236,7 @@ class ProductServiceIntegrationTests {
                 .mapToObj(i -> product(
                         faker.commerce().productName(),
                         faker.commerce().material(),
-                        new BigDecimal(faker.commerce().price())))
+                        Double.parseDouble(faker.commerce().price())))
                 .collect(Collectors.toList());
     }
 
