@@ -1,16 +1,6 @@
 server:
   port: 8091
 
-logging:
-  level:
-    org:
-      springframework:
-        data:
-          mongodb:
-            core:
-              ReactiveMongoTemplate: DEBUG
-    org.springframework.data.couchbase.repository.query: DEBUG
-
 spring:
   application:
     name: product-service
