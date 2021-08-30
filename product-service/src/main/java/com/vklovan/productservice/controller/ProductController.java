@@ -14,6 +14,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import java.util.concurrent.ThreadLocalRandom;
 
 @RestController
 @RequestMapping("products")
@@ -41,10 +42,18 @@ public class ProductController {
 
     @GetMapping("{id}")
     public Mono<ResponseEntity<ProductDto>> getById(@PathVariable String id) {
+        //simulateRandomException();
         return service.getById(id)
                 .map(mapper::toDto)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+    private void simulateRandomException() {
+        int nextInt = ThreadLocalRandom.current().nextInt(1, 10);
+        if (nextInt > 5) {
+            throw new RuntimeException("something is wrong");
+        }
     }
 
     @PostMapping

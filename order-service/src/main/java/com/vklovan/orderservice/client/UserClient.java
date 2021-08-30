@@ -2,10 +2,12 @@ package com.vklovan.orderservice.client;
 
 import com.vklovan.orderservice.dto.TransactionRequestDto;
 import com.vklovan.orderservice.dto.TransactionResponseDto;
+import com.vklovan.orderservice.dto.UserDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -19,6 +21,13 @@ public class UserClient {
         webClient = WebClient.builder()
                 .baseUrl(url)
                 .build();
+    }
+
+    public Flux<UserDto> getUsers() {
+        return webClient
+                .get()
+                .retrieve()
+                .bodyToFlux(UserDto.class);
     }
 
     public Mono<TransactionResponseDto> authorizeTransaction(int userId, TransactionRequestDto requestDto) {

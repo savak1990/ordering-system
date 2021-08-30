@@ -3,12 +3,21 @@ package com.vklovan.orderservice.util;
 import com.vklovan.orderservice.dto.*;
 import com.vklovan.orderservice.entity.PurchaseOrder;
 import org.hibernate.criterion.Order;
+import reactor.util.function.Tuple2;
 
 public class EntityDtoUtil {
 
     public static void setTransactionRequestDto(RequestContext rc) {
         TransactionRequestDto dto = new TransactionRequestDto(rc.getProductDto().price());
         rc.setTransactionRequestDto(dto);
+    }
+
+    public static PurchaseOrder createPurchaseOrder(Tuple2<UserDto, ProductDto> userProductTuple) {
+        PurchaseOrder purchaseOrder = new PurchaseOrder();
+        purchaseOrder.setUserId(userProductTuple.getT1().id());
+        purchaseOrder.setProductId(userProductTuple.getT2().id());
+        purchaseOrder.setAmount(userProductTuple.getT2().price().doubleValue());
+        return purchaseOrder;
     }
 
     public static PurchaseOrder getPurchaseOrder(RequestContext rc) {
