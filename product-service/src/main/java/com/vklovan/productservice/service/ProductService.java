@@ -2,6 +2,7 @@ package com.vklovan.productservice.service;
 
 import com.vklovan.productservice.dto.CountOffsetCriteria;
 import com.vklovan.productservice.dto.PriceCriteria;
+import com.vklovan.productservice.dto.ProductDto;
 import com.vklovan.productservice.entity.Product;
 import com.vklovan.productservice.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,12 +10,14 @@ import org.springframework.data.domain.Range;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
 
 @Service
 @RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository repository;
+    private final Sinks.Many<Product> sink;
 
     public Flux<Product> getAll(CountOffsetCriteria countOffsetCriteria) {
         return repository.findAll()
@@ -34,7 +37,9 @@ public class ProductService {
     }
 
     public Mono<Product> insert(Product product) {
-        return repository.insert(product);
+        return repository
+                .insert(product)
+                .doOnNext(sink::tryEmitNext);
     }
 
     public Mono<Product> update(String id, Product newProduct) {
